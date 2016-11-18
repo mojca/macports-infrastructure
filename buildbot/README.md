@@ -94,10 +94,10 @@ You will have to install this from source following
 
 * https://guide.macports.org/#installing.macports.source.multiple
 
-    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
-    MP_PREFIX=/opt/mp-buildbot/prefix
-    ./configure --prefix=$MP_PREFIX --with-applications-dir=$MP_PREFIX/Applications
-    make && sudo make install
+        export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+        MP_PREFIX=/opt/mp-buildbot/prefix
+        ./configure --prefix=$MP_PREFIX --with-applications-dir=$MP_PREFIX/Applications
+        make && sudo make install
 
 TODO: what to do about `startupitem_install no` in `$MP_PREFIX/etc/macports/macports.conf`?
 
@@ -182,8 +182,10 @@ MacPorts packages for various platforms. Most of the configuration above
 applies to the production environment. The configuration of the master in
 config.json should use prefixes such that packages are produced for /opt/local:
 
-> "slaveprefix":  "/opt/local"
-> "toolsprefix":  "/opt/mports"
+```json
+"slaveprefix":  "/opt/local"
+"toolsprefix":  "/opt/mports"
+```
 
 When setting up the slaves, specify the hostname and port of the machine
 running the buildbot master instead of "localhost:9989".
@@ -192,7 +194,7 @@ running the buildbot master instead of "localhost:9989".
 
 # Subversion checkout fails
 
-> svn: E170013: Unable to connect to a repository at URL 'https://svn.macports.org/repository/macports/contrib/mp-buildbot'
-> svn: E230001: Server SSL certificate verification failed: issuer is not trusted
+    svn: E170013: Unable to connect to a repository at URL 'https://svn.macports.org/repository/macports/contrib/mp-buildbot'
+    svn: E230001: Server SSL certificate verification failed: issuer is not trusted
 
-Install the `subversion` port to 'toolsprefix'.
+Install the `subversion` port to `'toolsprefix'`.
