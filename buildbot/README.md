@@ -94,6 +94,12 @@ You will have to install this from source following
 
 * https://guide.macports.org/#installing.macports.source.multiple
 
+    export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+    MP_PREFIX=/opt/mp-buildbot/prefix
+    ./configure --prefix=$MP_PREFIX --with-applications-dir=$MP_PREFIX/Applications
+    make && sudo make install
+
+TODO: what to do about `startupitem_install no` in `$MP_PREFIX/etc/macports/macports.conf`?
 
 #### 2. Install buildbot-slave
 
@@ -106,9 +112,10 @@ Install buildbot-slave in your *normal* `/opt/local` prefix:
 
 Create a directory that will contain the buildslaves working directory. 
 
-    sudo mkdir -p /opt/mp-buildbot
-    sudo chown -R $USER:buildbot /opt/mp-buildbot
-    sudo chmod -R 775 /opt/mp-buildbot
+    BB_PREFIX=/opt/mp-buildbot
+    sudo mkdir -p "$BB_PREFIX"
+    sudo chown -R $USER:buildbot "$BB_PREFIX"
+    sudo chmod -R 775 "$BB_PREFIX"
 
 Create two buildslaves, one for base running as the buildbot user, one
 for ports running as root:
@@ -119,23 +126,23 @@ for ports running as root:
 
     sudo -H -u buildbot buildslave \
                 create-slave --umask 022 \
-                /opt/mp-buildbot/slave-base \
+                "${BB_PREFIX}/slave-base" \
                 localhost:9989 \
                 base-${OSXVERS}_${ARCH} \
                 $PASSWORD
     
     sudo -H buildslave \
                 create-slave --umask 022 \
-                /opt/mp-buildbot/slave-ports \
+                "${BB_PREFIX}/slave-ports" \
                 localhost:9989 \
                 ports-${OSXVERS}_${ARCH} \
                 $PASSWORD
 
 #### 3. Add new buildbot slaves to buildbot master configuration
 
-Add the buildslaves to your buildmaster's slaves.json using the passwords you
+Add the buildslaves to your buildmaster's `slaves.json` using the passwords you
 provided when creating them. You will also need to change the list of
-'build_platforms' to the local platform you have set up a build slave for.
+`'build_platforms'` to the local platform you have set up a build slave for.
 
     $EDITOR /opt/mp-buildbot/master/slaves.json
 
@@ -143,8 +150,10 @@ IMPORTANT! Change the following configuration options in config.json:
 
     $EDITOR /opt/mp-buildbot/master/config.json
 
-> "slaveprefix":  "/opt/mp-buildbot/prefix"
-> "toolsprefix":  "/opt/local"
+```json
+    "slaveprefix":  "/opt/local",
+    "toolsprefix":  "/opt/mp-buildbot/prefix",
+```
 
 Reconfigure the buildbot master:
 
@@ -156,9 +165,10 @@ Reconfigure the buildbot master:
 These commands start the new build slaves. They should connect to the
 master successfully and be visible in the web interface.
 
-    sudo -H -u buildbot buildslave start /opt/mp-buildbot/slave-base
-    sudo -H buildslave start /opt/mp-buildbot/slave-ports
+    sudo -H -u buildbot buildslave start "${BB_PREFIX}/slave-base"
+    sudo -H buildslave start "${BB_PREFIX}/slave-ports"
 
+__TODO: this should be done with plists!!!__
 
 #### 5. Test your first build
 
